@@ -1,0 +1,1 @@
+# stripper_index_analysis
