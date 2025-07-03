@@ -78,3 +78,33 @@ def get_latest_value(series_id):
 def get_crude_inventory():
     return get_latest_value("WCESTUS1")  # Stocks hebdomadaires en milliers de barils
 
+from bs4 import BeautifulSoup
+
+def get_latest_crude_stock():
+    """
+    Scrape les données hebdomadaires des stocks de brut (WCRSTUS1W) depuis l'EIA.
+    Retourne le dernier chiffre en milliers de barils.
+    """
+    url = "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=WCRSTUS1&f=W"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+        table = soup.find('table', {'class': 'BasicTable'})
+
+        rows = table.find_all('tr')
+        for row in reversed(rows):  # on part du bas (les données les plus récentes)
+            cols = row.find_all('td')
+            if len(cols) >= 2:
+                value_str = cols[1].text.strip().replace(",", "")
+                if value_str.replace('.', '').isdigit():
+                    return int(value_str)
+
+    except Exception as e:
+        print("[ERROR] Failed to fetch crude stock data:", e)
+
+    return None  # fallback en cas d'erreur
+
+
