@@ -59,6 +59,7 @@ def fetch_fred_series(series_id, start_date="2023-01-01"):
     }
     response = requests.get(FRED_BASE_URL, params=params)
     data = response.json()
+    print(data) 
     
     df = pd.DataFrame(data["observations"])
     df["value"] = pd.to_numeric(df["value"], errors="coerce")
