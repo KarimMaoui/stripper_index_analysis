@@ -2,35 +2,45 @@ import plotly.graph_objects as go
 import pandas as pd
 from scripts import model
 
-def plot_profitability_matrix(price_range, cost_range):
+
+
+def plot_profit_margin_matrix(price_range, cost_range):
     """
-    Affiche une heatmap binaire (rentable ou non) sans échelle continue.
+    Heatmap avec échelle de profit multi-niveaux (7 couleurs) centrée sur 0.
     """
     z_data = []
     for cost in cost_range:
         row = []
         for price in price_range:
-            row.append(1 if model.is_profitable(price, cost) else 0)
+            margin = price - cost
+            row.append(margin)
         z_data.append(row)
 
-    # Création de la heatmap manuelle avec deux couleurs (rouge / vert)
     fig = go.Figure(
         data=go.Heatmap(
             z=z_data,
             x=price_range,
             y=cost_range,
-            colorscale=[(0, 'red'), (1, 'green')],
+            colorscale=[
+                [0.0, 'darkred'],
+                [0.2, 'red'],
+                [0.35, 'yellow'],
+                [0.5, 'lightgreen'],
+                [0.65, 'green'],
+                [0.8, 'darkgreen'],
+                [1.0, 'darkgreen']
+            ],
+            zmin=-30,
+            zmax=70,
             colorbar=dict(
-                tickvals=[0, 1],
-                ticktext=['Not Profitable', 'Profitable'],
-                title="Profitability"
-            ),
-            showscale=True
+                title="Profit Margin ($/barrel)",
+                titleside='right'
+            )
         )
     )
 
     fig.update_layout(
-        title="Stripper Well Profitability Matrix",
+        title="Profit Margin Matrix (Price - Cost)",
         xaxis_title="WTI Price (USD)",
         yaxis_title="Variable Cost (USD)",
         yaxis_autorange="reversed"
