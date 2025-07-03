@@ -43,3 +43,29 @@ if __name__ == "__main__":
     print("\n🔮 Courbe futures WTI (approximative) :")
     print(futures_curve)
 
+
+import pandas as pd
+import requests
+
+FRED_API_KEY = "6f5863ca9ddf67a531b77bb50475f173"  # Remplace par ta clé API perso
+FRED_BASE_URL = "https://api.stlouisfed.org/fred/series/observations"
+
+def fetch_fred_series(series_id, start_date="2023-01-01"):
+    params = {
+        "series_id": series_id,
+        "api_key": FRED_API_KEY,
+        "file_type": "json",
+        "observation_start": start_date,
+    }
+    response = requests.get(FRED_BASE_URL, params=params)
+    data = response.json()
+    
+    df = pd.DataFrame(data["observations"])
+    df["value"] = pd.to_numeric(df["value"], errors="coerce")
+    df["date"] = pd.to_datetime(df["date"])
+    return df.dropna(subset=["value"])[["date", "value"]]
+
+def get_latest_value(series_id):
+    df = fetch_fred_series(series_id)
+    return round(df["value"].iloc[-1], 2)
+
