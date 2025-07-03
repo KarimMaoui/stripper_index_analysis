@@ -16,16 +16,8 @@ st.markdown("### 📈 Données FRED – Marché pétrolier (live)")
 col1, col2 = st.columns(2)
 
 with col1:
-    wti_price = data_loader.get_wti_price_marketwatch()
+    wti_price = data_loader.get_latest_value("DCOILWTICO")  # WTI Crude Oil Spot Price
     st.metric("💵 WTI Spot Price", f"{wti_price} USD")
-
-with col2:
-    try:
-        rig_count = data_loader.get_baker_hughes_rig_count()
-        st.metric("🛠️ Active Rig Count", f"{rig_count}")
-    except Exception as e:
-        st.metric("🛠️ Active Rig Count", "N/A")
-        st.error(f"Erreur récupération Baker Hughes : {e}")
 
 # Inputs interactifs
 oil_price = st.slider("Prix du baril (USD)", min_value=20, max_value=100, value=70, step=1)
