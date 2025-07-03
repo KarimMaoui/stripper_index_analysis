@@ -43,43 +43,34 @@ if __name__ == "__main__":
     print("\n🔮 Courbe futures WTI (approximative) :")
     print(futures_curve)
 
-import yfinance as yf
-
+import pandas as pd
 import requests
-from bs4 import BeautifulSoup
 
-def get_wti_price_marketwatch():
-    url = "https://www.marketwatch.com/investing/future/crude%20oil%20-%20electronic"
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(url, headers=headers)
-    soup = BeautifulSoup(response.content, "html.parser")
+FRED_API_KEY = "TON_API_KEY_ICI"  # Remplace par ta vraie clé
 
-    try:
-        price_tag = soup.find("bg-quote", {"class": "value"})
-        price = float(price_tag.text.replace(",", ""))
-        return price
-    except Exception as e:
-        raise ValueError(f"Failed to scrape WTI price: {e}")
+def fetch_fred_series(series_id, start_date="2025-01-01"):
+    url = "https://api.stlouisfed.org/fred/series/observations"
+    params = {
+        "series_id": series_id,
+        "api_key": FRED_API_KEY,
+        "file_type": "json",
+        "observation_start": start_date,
+    }
 
+    response = requests.get(url, params=params)
+    data = response.json()
 
-import requests
-from bs4 import BeautifulSoup
+    if "observations" not in data:
+        print(f"[ERROR] Bad Request. The series '{series_id}' does not exist.")
+        return pd.DataFrame(columns=["date", "value"])
 
-def get_baker_hughes_rig_count():
-    url = "https://rigcount.bakerhughes.com/"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, "html.parser")
+    df = pd.DataFrame(data["observations"])
+    df["value"] = pd.to_numeric(df["value"], errors="coerce")
+    df["date"] = pd.to_datetime(df["date"])
+    return df.dropna(subset=["value"])[["date", "value"]]
 
-    # Trouver la ligne contenant "U.S." et en extraire la valeur
-    table = soup.find("table")
-    if not table:
-        raise ValueError("Impossible de trouver le tableau")
-
-    rows = table.find_all("tr")
-    for row in rows:
-        cols = row.find_all("td")
-        if len(cols) >= 3 and "U.S." in cols[0].text:
-            count_str = cols[2].text.strip()
-            return int(count_str)
-    
-    raise ValueError("Impossible de trouver le rig count US")
+def get_latest_value(series_id):
+    df = fetch_fred_series(series_id)
+    if df.empty:
+        return "N/A"
+    return round(df["value"].iloc[-1], 2)
