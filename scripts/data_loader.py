@@ -50,7 +50,7 @@ import requests
 FRED_API_KEY = "6f5863ca9ddf67a531b77bb50475f173"  # Remplace par ta clé API perso
 FRED_BASE_URL = "https://api.stlouisfed.org/fred/series/observations"
 
-def fetch_fred_series(series_id, start_date="2023-01-01"):
+def fetch_fred_series(series_id, start_date="2025-01-01"):
     params = {
         "series_id": series_id,
         "api_key": FRED_API_KEY,
