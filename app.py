@@ -16,7 +16,7 @@ st.markdown("### 📈 Données FRED – Marché pétrolier (live)")
 col1, col2 = st.columns(2)
 
 with col1:
-    wti_price = data_loader.get_latest_value("DCOILWTICO")
+    wti_price = data_loader.get_wti_price()
     st.metric("💵 WTI Spot Price", f"{wti_price} USD")
 
 with col2:
