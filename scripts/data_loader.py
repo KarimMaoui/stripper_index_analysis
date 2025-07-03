@@ -43,6 +43,12 @@ if __name__ == "__main__":
     print("\n🔮 Courbe futures WTI (approximative) :")
     print(futures_curve)
 
+import yfinance as yf
+
+def get_wti_price():
+    ticker = yf.Ticker("CL=F")
+    data = ticker.history(period="1d")
+    return round(data["Close"].iloc[-1], 2)
 
 import requests
 from bs4 import BeautifulSoup
