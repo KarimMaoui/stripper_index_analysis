@@ -75,16 +75,14 @@ def get_latest_value(series_id):
         return "N/A"
     return round(df["value"].iloc[-1], 2)
 
-def get_crude_inventory():
-    return get_latest_value("WCESTUS1")  # Stocks hebdomadaires en milliers de barils
 
 
 from bs4 import BeautifulSoup
 
 def get_latest_crude_stock():
     """
-    Scrape les données hebdomadaires des stocks de brut (WCRSTUS1W) depuis l'EIA.
-    Retourne le dernier chiffre en milliers de barils.
+    Scrape le dernier chiffre de stock de brut aux US depuis l’EIA.
+    Retourne la dernière valeur en milliers de barils (int) ou None si échec.
     """
     url = "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=WCRSTUS1&f=W"
 
@@ -93,18 +91,30 @@ def get_latest_crude_stock():
         response.raise_for_status()
 
         soup = BeautifulSoup(response.text, 'html.parser')
-        table = soup.find('table', {'class': 'BasicTable'})
 
-        rows = table.find_all('tr')
-        for row in reversed(rows):  # on parcourt du plus récent vers l'ancien
-            cols = row.find_all('td')
+        # Cherche la première table contenant les données (ignore les tables de légende)
+        tables = soup.find_all("table")
+        target_table = None
+        for table in tables:
+            if table.find("th") and "Weekly U.S. Ending Stocks of Crude Oil" in table.text:
+                target_table = table
+                break
+        if not target_table:
+            print("[ERROR] No valid table found.")
+            return None
+
+        # Trouve la dernière ligne contenant une valeur numérique
+        rows = target_table.find_all("tr")
+        for row in reversed(rows):
+            cols = row.find_all("td")
             if len(cols) >= 2:
                 value_str = cols[1].text.strip().replace(",", "")
-                if value_str.replace('.', '').isdigit():
-                    return int(value_str)
+                try:
+                    return int(float(value_str))
+                except ValueError:
+                    continue
 
     except Exception as e:
         print("[ERROR] Failed to fetch crude stock data:", e)
 
     return None
-
