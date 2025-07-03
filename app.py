@@ -20,12 +20,12 @@ with col1:
     st.metric("💵 WTI Spot Price", f"{wti_price} USD")
 
 with col2:
-    rig_count = data_loader.get_baker_hughes_rig_count()
-    if rig_count is not None:
+    try:
+        rig_count = data_loader.get_baker_hughes_rig_count()
         st.metric("🛠️ Active Rig Count", f"{rig_count}")
-    else:
-        st.warning("❗ Impossible de récupérer les données Baker Hughes")
-
+    except Exception as e:
+        st.metric("🛠️ Active Rig Count", "N/A")
+        st.error(f"Erreur récupération Baker Hughes : {e}")
 
 # Inputs interactifs
 oil_price = st.slider("Prix du baril (USD)", min_value=20, max_value=100, value=70, step=1)
