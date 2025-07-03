@@ -20,11 +20,9 @@ with col1:
     st.metric("💵 WTI Spot Price", f"{wti_price} USD")
 
 with col2:
-    crude_stock = data_loader.get_latest_crude_stock()
-    if crude_stock is not None:
-        st.metric("🏭 Crude Oil Stocks", f"{crude_stock:,} kb")
-    else:
-        st.metric("🏭 Crude Oil Stocks", "N/A")
+    stock_value = data_loader.get_latest_crude_stock()
+    st.metric("📦 Weekly U.S. Ending Stocks of Crude Oil", f"{stock_value:,} Kbbl" if stock_value else "N/A")
+
 
 
 # Inputs interactifs
