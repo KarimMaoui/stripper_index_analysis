@@ -4,7 +4,7 @@ from scripts import model
 
 
 
-def plot_profit_margin_matrix(price_range, cost_range):
+def plot_profitability_matrix(price_range, cost_range):
     """
     Heatmap avec échelle de profit multi-niveaux (7 couleurs) centrée sur 0.
     """
