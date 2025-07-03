@@ -1,31 +1,40 @@
-import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 from scripts import model
 
 def plot_profitability_matrix(price_range, cost_range):
     """
-    Affiche une heatmap interactive de rentabilité selon les coûts et prix du baril.
+    Affiche une heatmap binaire (rentable ou non) sans échelle continue.
     """
-    data = []
-    results = model.simulate_profitability_thresholds(price_range, cost_range)
-
+    z_data = []
     for cost in cost_range:
-        for i, price in enumerate(price_range):
-            data.append({
-                "Cost": cost,
-                "Price": price,
-                "Profitable": "Yes" if results[cost][i] else "No"
-            })
+        row = []
+        for price in price_range:
+            row.append(1 if model.is_profitable(price, cost) else 0)
+        z_data.append(row)
 
-    df = pd.DataFrame(data)
-
-    fig = px.imshow(
-        df.pivot(index="Cost", columns="Price", values="Profitable") == "Yes",
-        labels=dict(x="WTI Price (USD)", y="Variable Cost (USD)", color="Profitable"),
-        color_continuous_scale=["red", "green"],
-        aspect="auto",
-        title="Stripper Well Profitability Matrix"
+    # Création de la heatmap manuelle avec deux couleurs (rouge / vert)
+    fig = go.Figure(
+        data=go.Heatmap(
+            z=z_data,
+            x=price_range,
+            y=cost_range,
+            colorscale=[(0, 'red'), (1, 'green')],
+            colorbar=dict(
+                tickvals=[0, 1],
+                ticktext=['Not Profitable', 'Profitable'],
+                title="Profitability"
+            ),
+            showscale=True
+        )
     )
-    fig.update_layout(xaxis_title="WTI Price", yaxis_title="Variable Cost")
+
+    fig.update_layout(
+        title="Stripper Well Profitability Matrix",
+        xaxis_title="WTI Price (USD)",
+        yaxis_title="Variable Cost (USD)",
+        yaxis_autorange="reversed"
+    )
+
     fig.show()
 
