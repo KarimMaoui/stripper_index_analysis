@@ -45,10 +45,22 @@ if __name__ == "__main__":
 
 import yfinance as yf
 
-def get_wti_price():
-    ticker = yf.Ticker("CL=F")
-    data = ticker.history(period="1d")
-    return round(data["Close"].iloc[-1], 2)
+import requests
+from bs4 import BeautifulSoup
+
+def get_wti_price_marketwatch():
+    url = "https://www.marketwatch.com/investing/future/crude%20oil%20-%20electronic"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    try:
+        price_tag = soup.find("bg-quote", {"class": "value"})
+        price = float(price_tag.text.replace(",", ""))
+        return price
+    except Exception as e:
+        raise ValueError(f"Failed to scrape WTI price: {e}")
+
 
 import requests
 from bs4 import BeautifulSoup
