@@ -21,10 +21,10 @@ with col1:
 
 with col2:
     crude_stock = data_loader.get_latest_crude_stock()
-    if crude_stock:
-        st.metric("🛢️ US Crude Oil Stocks", f"{crude_stock:,}k barrels")
+    if crude_stock is not None:
+        st.metric("🏭 Crude Oil Stocks", f"{crude_stock:,} kb")
     else:
-        st.warning("📉 Données de stocks indisponibles")
+        st.metric("🏭 Crude Oil Stocks", "N/A")
 
 
 # Inputs interactifs
