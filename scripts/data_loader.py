@@ -44,33 +44,21 @@ if __name__ == "__main__":
     print(futures_curve)
 
 
-import pandas as pd
 import requests
 
-FRED_API_KEY = "6f5863ca9ddf67a531b77bb50475f173"  # Remplace par ta clé API perso
-FRED_BASE_URL = "https://api.stlouisfed.org/fred/series/observations"
+def get_baker_hughes_rig_count():
+    url = "https://rigcount.bakerhughes.com/"
+    res = requests.get(url)
 
-def fetch_fred_series(series_id):
-    url = f"https://api.stlouisfed.org/fred/series/observations"
-    params = {
-        "series_id": series_id,
-        "api_key": FRED_API_KEY,
-        "file_type": "json"
-    }
-    response = requests.get(url, params=params)
-    data = response.json()
-
-    # Gestion des erreurs
-    if "error_code" in data:
-        print(f"[ERROR] {data['error_message']}")
-        return pd.DataFrame()  # retourne un dataframe vide pour ne pas planter
-
-    df = pd.DataFrame(data["observations"])
-    df["value"] = pd.to_numeric(df["value"], errors="coerce")
-    df["date"] = pd.to_datetime(df["date"])
-    return df.dropna(subset=["value"])[["date", "value"]]
-def get_latest_value(series_id):
-    df = fetch_fred_series(series_id)
-    if df.empty:
-        return "N/A"
-    return round(df["value"].iloc[-1], 2)
+    # Le premier tableau de la page contient les rig counts
+    try:
+        tables = pd.read_html(res.text)
+        df = tables[0]
+        us_row = df[df["Area"] == "U.S."]
+        if not us_row.empty:
+            return int(us_row["Count"].values[0])
+        else:
+            return None
+    except Exception as e:
+        print(f"[ERROR] Impossible de lire le tableau des rigs : {e}")
+        return None
