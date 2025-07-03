@@ -18,12 +18,13 @@ col1, col2 = st.columns(2)
 with col1:
     wti_price = data_loader.get_latest_value("DCOILWTICO")  # WTI Crude Oil Spot Price
     st.metric("💵 WTI Spot Price", f"{wti_price} USD")
+
 with col2:
-    try:
-        inventory = data_loader.get_crude_inventory()
-        st.metric("🛢️ Crude Oil Inventory", f"{inventory} kb")
-    except:
-        st.metric("🛢️ Crude Oil Inventory", "N/A")
+    crude_stock = data_loader.get_latest_crude_stock()
+    if crude_stock:
+        st.metric("🛢️ US Crude Oil Stocks", f"{crude_stock:,}k barrels")
+    else:
+        st.warning("📉 Données de stocks indisponibles")
 
 
 # Inputs interactifs
