@@ -1,3 +1,4 @@
+from scripts import data_loader
 import streamlit as st
 import sys
 import os
@@ -9,6 +10,18 @@ from scripts import model, visualizer
 st.set_page_config(page_title="Stripper Index Simulator", layout="centered")
 
 st.title("🛢️ Stripper Well Profitability Simulator")
+
+st.markdown("### 📈 Données FRED – Marché pétrolier (live)")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    wti_price = data_loader.get_latest_value("DCOILWTICO")
+    st.metric("💵 WTI Spot Price", f"{wti_price} USD")
+
+with col2:
+    rig_count = data_loader.get_latest_value("OILRIGCOUNT")
+    st.metric("🛠️ Active Rig Count", f"{rig_count}")
 
 # Inputs interactifs
 oil_price = st.slider("Prix du baril (USD)", min_value=20, max_value=100, value=70, step=1)
