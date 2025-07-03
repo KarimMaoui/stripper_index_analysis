@@ -45,20 +45,23 @@ if __name__ == "__main__":
 
 
 import requests
+from bs4 import BeautifulSoup
 
 def get_baker_hughes_rig_count():
     url = "https://rigcount.bakerhughes.com/"
-    res = requests.get(url)
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
 
-    # Le premier tableau de la page contient les rig counts
-    try:
-        tables = pd.read_html(res.text)
-        df = tables[0]
-        us_row = df[df["Area"] == "U.S."]
-        if not us_row.empty:
-            return int(us_row["Count"].values[0])
-        else:
-            return None
-    except Exception as e:
-        print(f"[ERROR] Impossible de lire le tableau des rigs : {e}")
-        return None
+    # Trouver la ligne contenant "U.S." et en extraire la valeur
+    table = soup.find("table")
+    if not table:
+        raise ValueError("Impossible de trouver le tableau")
+
+    rows = table.find_all("tr")
+    for row in rows:
+        cols = row.find_all("td")
+        if len(cols) >= 3 and "U.S." in cols[0].text:
+            count_str = cols[2].text.strip()
+            return int(count_str)
+    
+    raise ValueError("Impossible de trouver le rig count US")
