@@ -74,3 +74,7 @@ def get_latest_value(series_id):
     if df.empty:
         return "N/A"
     return round(df["value"].iloc[-1], 2)
+
+def get_crude_inventory():
+    return get_latest_value("WCESTUS1")  # Stocks hebdomadaires en milliers de barils
+
