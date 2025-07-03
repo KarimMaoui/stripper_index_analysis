@@ -46,7 +46,7 @@ if __name__ == "__main__":
 import pandas as pd
 import requests
 
-FRED_API_KEY = "TON_API_KEY_ICI"  # Remplace par ta vraie clé
+FRED_API_KEY = "6f5863ca9ddf67a531b77bb50475f173"  # Remplace par ta vraie clé
 
 def fetch_fred_series(series_id, start_date="2025-01-01"):
     url = "https://api.stlouisfed.org/fred/series/observations"
