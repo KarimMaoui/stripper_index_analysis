@@ -47,5 +47,5 @@ def plot_profitability_matrix(price_range, cost_range):
         yaxis_autorange="reversed"
     )
 
-    fig.show()
+    st.plotly_chart(fig)
 
