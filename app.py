@@ -28,3 +28,17 @@ price_range = list(range(30, 91, 5))
 cost_range = list(range(20, 61, 5))
 st.write(dir(visualizer))
 visualizer.plot_profitability_matrix(price_range, cost_range)
+
+
+
+from scripts.stripper_index import compute_stripper_index
+
+index = compute_stripper_index(
+    oil_price=75,
+    transport_cost=8,
+    rig_count=520,
+    differential=-2,
+    production_cost=40
+)
+
+st.metric("📊 Stripper Index", f"{index}/100", help="Indicateur synthétique de rentabilité sectorielle")
