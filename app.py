@@ -20,7 +20,7 @@ with col1:
     st.metric("💵 WTI Spot Price", f"{wti_price} USD")
 
 with col2:
-    rig_count = data_loader.get_latest_value("OILRIGCOUNT")
+    rig_count = data_loader.get_latest_value("OGNRRU")
     st.metric("🛠️ Active Rig Count", f"{rig_count}")
 
 # Inputs interactifs
