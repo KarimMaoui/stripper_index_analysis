@@ -20,8 +20,8 @@ with col1:
     st.metric("💵 WTI Spot Price", f"{wti_price} USD")
 
 with col2:
-    rig_count = eia.get_latest_rig_count()  # via API EIA ou Baker Hughes
-    st.metric("🛠️ Active Rig Count", f"{rig_count}")
+    st.metric("🛠️ Active Rig Count", "N/A")
+    st.caption("Donnée non disponible via FRED – à ajouter via une source externe comme Baker Hughes.")
 
 # Inputs interactifs
 oil_price = st.slider("Prix du baril (USD)", min_value=20, max_value=100, value=70, step=1)
