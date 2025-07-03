@@ -94,9 +94,10 @@ def get_latest_crude_stock():
         tables = soup.find_all("table")
         for table in tables:
             tds = table.find_all("td")
-            for td in tds:
+            # Lire en sens inverse pour trouver la donnée la plus récente
+            for td in reversed(tds):
                 text = td.get_text(strip=True).replace(",", "")
-                if text.isdigit() and len(text) >= 6:  # typique des stocks comme 821716
+                if text.isdigit() and len(text) >= 6:
                     return int(text)
         print("[ERROR] No valid stock value found in any table")
         return None
