@@ -78,6 +78,7 @@ def get_latest_value(series_id):
 def get_crude_inventory():
     return get_latest_value("WCESTUS1")  # Stocks hebdomadaires en milliers de barils
 
+
 from bs4 import BeautifulSoup
 
 def get_latest_crude_stock():
@@ -95,7 +96,7 @@ def get_latest_crude_stock():
         table = soup.find('table', {'class': 'BasicTable'})
 
         rows = table.find_all('tr')
-        for row in reversed(rows):  # on part du bas (les données les plus récentes)
+        for row in reversed(rows):  # on parcourt du plus récent vers l'ancien
             cols = row.find_all('td')
             if len(cols) >= 2:
                 value_str = cols[1].text.strip().replace(",", "")
@@ -105,6 +106,5 @@ def get_latest_crude_stock():
     except Exception as e:
         print("[ERROR] Failed to fetch crude stock data:", e)
 
-    return None  # fallback en cas d'erreur
-
+    return None
 
