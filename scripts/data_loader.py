@@ -77,6 +77,7 @@ def get_latest_value(series_id):
 
 
 
+import requests
 from bs4 import BeautifulSoup
 
 def get_latest_crude_stock():
@@ -90,17 +91,14 @@ def get_latest_crude_stock():
     soup = BeautifulSoup(response.content, "html.parser")
 
     try:
-        # On cible le premier tableau
-        table = soup.find("table", class_="BasicTable")
-        tds = table.find_all("td")
-
-        # On cherche la première valeur numérique valide
-        for td in tds:
-            text = td.get_text(strip=True).replace(",", "")
-            if text.isdigit():
-                return int(text)
-
-        print("[ERROR] No valid stock value found")
+        tables = soup.find_all("table")
+        for table in tables:
+            tds = table.find_all("td")
+            for td in tds:
+                text = td.get_text(strip=True).replace(",", "")
+                if text.isdigit() and len(text) >= 6:  # typique des stocks comme 821716
+                    return int(text)
+        print("[ERROR] No valid stock value found in any table")
         return None
     except Exception as e:
         print(f"[ERROR] Parsing failed: {e}")
