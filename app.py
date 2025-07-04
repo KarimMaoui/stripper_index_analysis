@@ -38,8 +38,8 @@ with col2:
         st.metric("📦 Weekly U.S. Ending Stocks of Crude Oil", label, delta=delta_str)
 
         if yoy_value:
-            delta_yoy = stock_value - yoy_value
-            st.caption(f"🌀 Évolution YoY : {delta_yoy:+,} vs année préc.")
+            delta_yoy = ((stock_value - yoy_value) / yoy_value) * 100
+            st.caption(f"🌀 Évolution YoY : {delta_yoy:+.2f}% vs année préc.")
 
 
 
