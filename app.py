@@ -72,3 +72,12 @@ index = compute_stripper_index(
 
 st.metric("📊 Stripper Index", f"{index}/100", help="Indicateur synthétique de rentabilité sectorielle")
 
+
+
+st.markdown("---")
+st.subheader("🔮 Courbe de Futures WTI")
+
+futures_curve = data_loader.fetch_wti_futures_curve()
+st.line_chart(futures_curve)
+
+
