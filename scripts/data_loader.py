@@ -147,25 +147,16 @@ def get_crude_stock_info():
             except:
                 continue
 
-    if len(stock_values) < 2:
+       # Extraire seulement les valeurs (par ordre chronologique)
+    numeric_values = [entry["value"] for entry in stock_values]
+    if len(numeric_values) < 2:
         return None, None, None, None
 
-    # Trier
-    def date_key(entry):
-        try:
-            return datetime.datetime.strptime(entry["month"], "%Y-%b"), entry["week_pos"]
-        except:
-            return datetime.datetime.min, 0
+    latest_value = numeric_values[-1]
+    previous_value = numeric_values[-2]
 
-    stock_values.sort(key=date_key)
-
+    # YoY avec week_pos
     latest = stock_values[-1]
-    previous = stock_values[-2]
-
-    latest_value = latest["value"]
-    previous_value = previous["value"]
-
-    # YoY
     target_month = f"{int(latest['month'].split('-')[0]) - 1}-{latest['month'].split('-')[1]}"
     week_pos = latest["week_pos"]
     yoy_value = None
