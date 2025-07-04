@@ -73,17 +73,15 @@ index = compute_stripper_index(
 st.metric("📊 Stripper Index", f"{index}/100", help="Indicateur synthétique de rentabilité sectorielle")
 
 
-
-st.markdown("### 🔮 Courbe de Futures WTI")
+st.markdown("### 🔮 Courbe de Futures WTI (via Quandl)")
 
 try:
-    futures_curve = data_loader.fetch_wti_futures_curve()
+    futures_curve = data_loader.fetch_wti_futures_from_quandl()
 
     if futures_curve.isnull().all():
-        st.warning("⚠️ Aucune donnée disponible pour les futures WTI.")
+        st.warning("⚠️ Données futures WTI non disponibles (Quandl).")
     else:
         st.line_chart(futures_curve)
-        st.caption("Courbe approximative des contrats à terme sur le WTI (via Yahoo Finance ou fallback manuel si indisponible).")
-
+        st.caption("Source : Nasdaq Data Link (Quandl) – prix de règlement des contrats à terme sur le WTI.")
 except Exception as e:
-    st.error(f"Erreur lors du chargement de la courbe des futures : {e}")
+    st.error(f"Erreur lors du chargement des futures WTI : {e}")
