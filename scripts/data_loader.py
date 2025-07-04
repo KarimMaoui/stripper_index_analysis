@@ -179,10 +179,15 @@ def fetch_wti_futures_curve():
     futures_prices = {}
     for label, ticker in contracts.items():
         try:
-            data = yf.Ticker(ticker).history(period="1d")
-            price = data["Close"].iloc[-1]
-            futures_prices[label] = price
-        except:
+            data = yf.download(ticker, period="5d")
+            if not data.empty:
+                price = data["Close"].dropna().iloc[-1]
+                futures_prices[label] = round(price, 2)
+            else:
+                print(f"[WARN] No data for {ticker}")
+                futures_prices[label] = None
+        except Exception as e:
+            print(f"[ERROR] Failed to get ticker '{ticker}' reason: {e}")
             futures_prices[label] = None
 
     return pd.Series(futures_prices, name="WTI_Futures")
