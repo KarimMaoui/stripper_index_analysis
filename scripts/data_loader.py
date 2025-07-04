@@ -166,3 +166,24 @@ def get_crude_stock_info():
             break
 
     return latest_value, previous_value, yoy_value, week_pos
+
+
+
+def fetch_wti_futures_curve():
+    contracts = {
+        "M+0": "CL=F",
+        "M+1": "CLQ25.NYM",
+        "M+2": "CLU25.NYM",
+    }
+
+    futures_prices = {}
+    for label, ticker in contracts.items():
+        try:
+            data = yf.Ticker(ticker).history(period="1d")
+            price = data["Close"].iloc[-1]
+            futures_prices[label] = price
+        except:
+            futures_prices[label] = None
+
+    return pd.Series(futures_prices, name="WTI_Futures")
+
