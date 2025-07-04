@@ -115,12 +115,12 @@ def get_crude_stock_info():
     response = requests.get(url)
     if response.status_code != 200:
         print("[ERROR] Failed to fetch crude stock data")
-        return None, None, None
+        return None, None, None, None
 
     soup = BeautifulSoup(response.content, "html.parser")
     tables = soup.find_all("table")
 
-    weekly_data = []
+    stock_values = []
 
     for table in tables:
         rows = table.find_all("tr")
@@ -132,53 +132,46 @@ def get_crude_stock_info():
                 continue
             try:
                 year_month = cells[0].get_text(strip=True)
-                for i in range(1, len(cells), 2):  # Skip date columns
+                for i in range(1, len(cells), 2):
                     if i + 1 >= len(cells):
                         break
                     value_str = cells[i + 1].get_text(strip=True).replace(",", "")
                     if value_str.isdigit():
                         value = int(value_str)
-                        week_pos = (i + 1) // 2  # Week number in the month (1 to 5)
-                        weekly_data.append({
+                        week_pos = (i + 1) // 2
+                        stock_values.append({
                             "month": year_month,
                             "week_pos": week_pos,
                             "value": value
                         })
-            except Exception as e:
+            except:
                 continue
 
-    if not weekly_data:
-        return None, None, None
+    if len(stock_values) < 2:
+        return None, None, None, None
 
-    # Trier par date approx
+    # Trier
     def date_key(entry):
         try:
             return datetime.datetime.strptime(entry["month"], "%Y-%b"), entry["week_pos"]
         except:
             return datetime.datetime.min, 0
 
-    weekly_data.sort(key=date_key)
+    stock_values.sort(key=date_key)
 
-    latest = weekly_data[-1]
+    latest = stock_values[-1]
+    previous = stock_values[-2]
+
     latest_value = latest["value"]
-    latest_month = latest["month"]
-    latest_week_pos = latest["week_pos"]
+    previous_value = previous["value"]
 
-    # Trouver la semaine précédente (si elle existe)
-    prev = weekly_data[-2]["value"] if len(weekly_data) >= 2 else None
+    # YoY
+    target_month = f"{int(latest['month'].split('-')[0]) - 1}-{latest['month'].split('-')[1]}"
+    week_pos = latest["week_pos"]
+    yoy_value = None
+    for entry in stock_values:
+        if entry["month"] == target_month and entry["week_pos"] == week_pos:
+            yoy_value = entry["value"]
+            break
 
-    # Trouver l’année précédente (même mois + même semaine)
-    one_year_ago = None
-    try:
-        latest_year, latest_month_abbr = latest_month.split("-")
-        latest_year = int(latest_year)
-        target_month = f"{latest_year - 1}-{latest_month_abbr}"
-        for entry in weekly_data:
-            if entry["month"] == target_month and entry["week_pos"] == latest_week_pos:
-                one_year_ago = entry["value"]
-                break
-    except:
-        pass
-
-    return latest_value, prev, one_year_ago
-
+    return latest_value, previous_value, yoy_value, week_pos
