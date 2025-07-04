@@ -176,27 +176,5 @@ import pandas as pd
 # Remplace par ta vraie clé
 quandl.ApiConfig.api_key = "uyGL9A6fms5b6yiBP98y"
 
-def fetch_wti_futures_from_quandl():
-    """
-    Récupère les prix des futures WTI via Quandl (CME Group).
-    """
-    try:
-        # Le code 'CHRIS/CME_CL1' correspond au contrat future WTI front month
-        contracts = {
-            "M+0": "CHRIS/CME_CL1",
-            "M+1": "CHRIS/CME_CL2",
-            "M+2": "CHRIS/CME_CL3"
-        }
-
-        prices = {}
-        for label, code in contracts.items():
-            df = quandl.get(code, rows=1)
-            prices[label] = df["Settle"].iloc[-1]
-
-        return pd.Series(prices, name="WTI_Futures")
-
-    except Exception as e:
-        print(f"[ERROR Quandl] {e}")
-        return pd.Series({"M+0": None, "M+1": None, "M+2": None})
-
-
+df = quandl.get("CHRIS/CME_CL1", rows=1)
+print(df)
