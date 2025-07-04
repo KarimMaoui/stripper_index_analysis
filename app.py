@@ -20,20 +20,23 @@ with col1:
     st.metric("💵 WTI Spot Price", f"{wti_price} USD")
 
 with col2:
-    stock_value, prev_week_value, yoy_value = data_loader.get_crude_stock_info()
+    stock_value, prev_value, yoy_value, _ = data_loader.get_crude_stock_info()
 
     if stock_value is None:
-        st.metric("📦 Weekly U.S. Ending Crude Stocks", "N/A", help="Impossible de récupérer les données.")
+        st.metric("📦 Weekly U.S. Ending Stocks of Crude Oil", "N/A")
     else:
-        variation_week = stock_value - prev_week_value if prev_week_value else None
-        variation_yoy = stock_value - yoy_value if yoy_value else None
+        delta_str = "N/A"
+        if prev_value:
+            delta = ((stock_value - prev_value) / prev_value) * 100
+            delta_str = f"{delta:+.2f}% vs semaine préc."
 
         label = f"{stock_value:,} kbbl"
-        delta_str = f"{variation_week:+,} vs semaine préc." if variation_week else "N/A"
-        yoy_str = f"{variation_yoy:+,} vs année préc." if variation_yoy else "N/A"
-
         st.metric("📦 Weekly U.S. Ending Stocks of Crude Oil", label, delta=delta_str)
-        st.caption(f"🔁 Évolution YoY : {yoy_str}")
+
+        if yoy_value:
+            delta_yoy = stock_value - yoy_value
+            st.caption(f"🌀 Évolution YoY : {delta_yoy:+,} vs année préc.")
+
 
 
 # Inputs interactifs
