@@ -18,10 +18,11 @@ def fetch_wti_futures_curve():
     Il faut passer par plusieurs tickers mensuels comme CL=F, CLM25.NYM, CLN25.NYM, etc.
     """
     contracts = {
-        "M+0": "CL=F",        # Front month
-        "M+1": "CLQ25.NYM",   # Exemple : août 2025
-        "M+2": "CLU25.NYM",   # septembre 2025
+    "M+0": "CL=F",
+    "M+1": "CLQ25.NYM",
+    "M+2": "CL=F"
     }
+
 
     futures_prices = {}
     for label, ticker in contracts.items():
