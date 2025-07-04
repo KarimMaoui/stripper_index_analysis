@@ -21,11 +21,7 @@ with col1:
 
 with col2:
     stock_value, prev_value, yoy_value, _ = data_loader.get_crude_stock_info()
- # 🔍 DEBUG pour comprendre la variation hebdo
-    st.write("🧪 Stock actuel :", stock_value)
-    st.write("🧪 Semaine précédente :", prev_value)
-    st.write("🧪 Écart brut (kbbl) :", stock_value - prev_value if stock_value and prev_value else "N/A")
-    st.write("🧪 Variation % :", ((stock_value - prev_value) / prev_value * 100) if prev_value else "N/A")
+    
     if stock_value is None:
         st.metric("📦 Weekly U.S. Ending Stocks of Crude Oil", "N/A")
     else:
