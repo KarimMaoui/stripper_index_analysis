@@ -74,10 +74,16 @@ st.metric("📊 Stripper Index", f"{index}/100", help="Indicateur synthétique d
 
 
 
-st.markdown("---")
-st.subheader("🔮 Courbe de Futures WTI")
+st.markdown("### 🔮 Courbe de Futures WTI")
 
-futures_curve = data_loader.fetch_wti_futures_curve()
-st.line_chart(futures_curve)
+try:
+    futures_curve = data_loader.fetch_wti_futures_curve()
 
+    if futures_curve.isnull().all():
+        st.warning("⚠️ Aucune donnée disponible pour les futures WTI.")
+    else:
+        st.line_chart(futures_curve)
+        st.caption("Courbe approximative des contrats à terme sur le WTI (via Yahoo Finance ou fallback manuel si indisponible).")
 
+except Exception as e:
+    st.error(f"Erreur lors du chargement de la courbe des futures : {e}")
